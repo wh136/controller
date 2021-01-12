@@ -15,7 +15,13 @@
 	<description>Controller project for Spring Boot</description>
 
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
+		<grpc.version>1.16.1</grpc.version>
+		<grpc-java-spring.version>0.0.3</grpc-java-spring.version>
+		<protoc.version>3.6.1</protoc.version>
+
+
 	</properties>
 
 	<dependencies>
@@ -51,9 +57,61 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-protobuf</artifactId>
+			<version>${grpc.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.nxest.grpc</groupId>
+			<artifactId>grpc-java-spring</artifactId>
+			<version>${grpc-java-spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.nxest.grpc</groupId>
+			<artifactId>grpc-java-spring</artifactId>
+			<version>${grpc-java-spring.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>io.grpc</groupId>
+					<artifactId>io.grpc:grpc-netty-shaded</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-netty-shaded</artifactId>
+			<version>1.16.1</version>
+			<systemPath>${pom.basedir}/src/main/webapp/WEB-INF/lib/grpc-netty-shaded-1.16.1.jar</systemPath>
+		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>0.0.0</groupId>-->
+<!--			<artifactId>com-protobuf</artifactId>-->
+<!--			<scope>system</scope>-->
+<!--			<systemPath>${pom.basedir}/src/main/webapp/WEB-INF/lib/xxx.jar</systemPath>-->
+<!--		</dependency>-->
+
 	</dependencies>
 
 	<build>
+		<finalName>${project.artifactId}</finalName>
+		<filters>
+			<filter>src/main/resource/conf/${env}.properties</filter>
+		</filters>
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>**/*.xml</include>
+					<include>**/*.properties</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/java</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -69,5 +127,34 @@
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<env>dev</env>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-devtools</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>test</id>
+			<properties>
+				<env>test</env>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<env>prod</env>
+			</properties>
+		</profile>
+	</profiles>
 
 </project>
